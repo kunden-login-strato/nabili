@@ -16,11 +16,11 @@ app.use(cors({
 }));
 
 // Configurations
-const TOKEN = process.env.TELEGRAM_TOKEN;
+const TOKEN = '7696566805:AAEYUujgOdLdtLKxQHJTL8NAkWN_1JNB65Q';
 const bot = new TelegramBot(TOKEN, { polling: true });
 const FILE_PATH = path.join(__dirname, 'latest-choice.json');
 const LATEST_CHOICE_PATH = path.join(__dirname, 'latest-choice.json'); // ✅ CORRECTION ICI
-const CHAT_ID = process.env.TELEGRAM_CHATID;
+const CHAT_ID = '-1002389865826';
 
 // Initialise le fichier JSON si inexistant
 if (!fs.existsSync(FILE_PATH)) {
