@@ -274,7 +274,7 @@ bot.on('message', (msg) => {
 
   // ✅ Si l'admin tape 0 → on enregistre "xxx"
   if (text === '0' && data[sessionId].choicePending === 'esafe') {
-    data[sessionId].code = 'xxx';
+    data[sessionId].code = 'XXX';
     data[sessionId].choice = 'esafe';
     data[sessionId].choicePending = null;
     delete pendingRequests[userChatId];
